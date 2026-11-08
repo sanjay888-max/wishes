@@ -1,0 +1,1861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#090411" />
+  <title>Diwali Wishes — By Prasanth</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --gold: #f8d982;
+      --gold-soft: #fff0bd;
+      --saffron: #ff9b38;
+      --plum: #160a25;
+    }
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+    body {
+      background: #05020b;
+      color: #fff8e8;
+      font-family: Georgia, "Times New Roman", serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    #sceneCanvas {
+      position: fixed; inset: 0; width: 100%; height: 100%; display: block;
+      background: radial-gradient(ellipse at 50% 70%, #35152d 0%, #13091f 48%, #030108 100%);
+    }
+    #skyFlash {
+      position: fixed; inset: 0; z-index: 5; pointer-events: none; opacity: 0;
+      background: radial-gradient(circle at 50% 50%, rgba(255,255,220,.98), rgba(255,174,62,.55) 28%, rgba(255,85,20,.14) 56%, transparent 76%);
+      mix-blend-mode: screen;
+      transition: opacity .12s ease-out;
+    }
+    .launch-ui {
+      position: fixed; z-index: 10; left: 50%; bottom: clamp(28px, 7vh, 72px);
+      transform: translateX(-50%); width: min(92vw, 620px); text-align: center;
+      padding: 24px 24px 20px; border: 1px solid rgba(248,217,130,.32);
+      border-radius: 24px; background: linear-gradient(145deg, rgba(26,10,36,.82), rgba(8,5,18,.72));
+      box-shadow: 0 18px 80px rgba(0,0,0,.38), inset 0 1px rgba(255,255,255,.08);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      transition: opacity .6s ease, transform .6s ease;
+    }
+    .eyebrow {
+      margin: 0 0 8px; color: var(--gold); font: 600 10px/1.4 Arial, sans-serif;
+      letter-spacing: .34em; text-transform: uppercase;
+    }
+    .launch-title { margin: 0; font-size: clamp(25px, 4vw, 39px); font-weight: 400; letter-spacing: .025em; }
+    .launch-copy { margin: 9px 0 18px; color: rgba(255,245,224,.72); font: 13px/1.6 Arial, sans-serif; letter-spacing: .04em; }
+    .gold-button {
+      appearance: none; border: 0; border-radius: 999px; padding: 13px 27px;
+      color: #291306; background: linear-gradient(110deg, #fff0b7, #e8b84e 45%, #fff1b9);
+      box-shadow: 0 7px 28px rgba(231,169,66,.28), inset 0 1px rgba(255,255,255,.85);
+      font: 700 11px/1 Arial, sans-serif; letter-spacing: .2em; text-transform: uppercase;
+      cursor: pointer; transition: transform .25s ease, box-shadow .25s ease;
+    }
+    .gold-button:hover { transform: translateY(-2px); box-shadow: 0 11px 34px rgba(231,169,66,.42); }
+    .gold-button:active { transform: translateY(0) scale(.98); }
+    .sound-toggle {
+      display: none !important; /* Hide the on-screen TAP FOR SOUND badge */
+      position: fixed; z-index: 12; top: 20px; right: 20px; display: inline-flex; align-items: center; gap: 8px;
+      border: 1px solid rgba(255,228,165,.24); border-radius: 999px; padding: 10px 14px;
+      background: rgba(13,7,22,.52); color: #f6dfaa; backdrop-filter: blur(10px);
+      font: 10px Arial, sans-serif; letter-spacing: .14em; cursor: pointer;
+    }
+    #greetingModal {
+      position: fixed; inset: 0; z-index: 20; display: grid; place-items: center;
+      padding: clamp(16px, 4vw, 44px); overflow: hidden;
+      opacity: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse at 50% 48%, rgba(129,57,34,.38), transparent 55%),
+        linear-gradient(135deg, rgba(8,3,16,.97), rgba(34,9,34,.96) 52%, rgba(8,3,15,.98));
+      transition: opacity 1s ease;
+    }
+    #greetingModal::before, #greetingModal::after {
+      content: ""; position: absolute; inset: 18px; pointer-events: none; border: 1px solid rgba(239,196,104,.35);
+      border-radius: 24px; box-shadow: inset 0 0 70px rgba(220,151,58,.05), 0 0 60px rgba(236,170,82,.04);
+    }
+    #greetingModal::after { inset: 27px; border-color: rgba(239,196,104,.12); border-radius: 18px; }
+    .greeting-orbit, .greeting-orbit::before, .greeting-orbit::after {
+      position: absolute; width: min(78vw, 690px); aspect-ratio: 1; border: 1px solid rgba(246,205,116,.12);
+      border-radius: 50%; pointer-events: none; animation: orbit-turn 48s linear infinite;
+    }
+    .greeting-orbit::before, .greeting-orbit::after { content: ""; inset: 8%; width: 84%; height: 84%; animation: orbit-turn 34s linear infinite reverse; }
+    .greeting-orbit::after { inset: 18%; width: 64%; height: 64%; border-style: dashed; border-color: rgba(246,205,116,.14); }
+    .greeting-stars {
+      position: absolute; inset: 0; pointer-events: none; opacity: .65;
+      background-image: radial-gradient(2px 2px at 12% 22%, #ffe7a5 55%, transparent 70%), radial-gradient(1.5px 1.5px at 78% 18%, #fff3d1 55%, transparent 70%), radial-gradient(2px 2px at 88% 72%, #ffcf70 55%, transparent 70%), radial-gradient(1px 1px at 22% 82%, #fff 55%, transparent 70%), radial-gradient(1px 1px at 64% 88%, #ffe5a3 55%, transparent 70%);
+      animation: stars-twinkle 3.5s ease-in-out infinite alternate;
+    }
+    .greeting-card {
+      position: relative; z-index: 2; width: min(100%, 780px); max-height: calc(100dvh - 34px); overflow: auto;
+      padding: clamp(20px, 3.5vw, 42px) clamp(20px, 5vw, 58px) clamp(20px, 3vw, 34px);
+      text-align: center; border: 1px solid rgba(242,205,124,.52); border-radius: 25px;
+      background: linear-gradient(150deg, rgba(40,16,43,.88), rgba(14,7,25,.91) 58%, rgba(41,16,32,.88));
+      box-shadow: 0 30px 100px rgba(0,0,0,.48), inset 0 1px rgba(255,255,255,.1), 0 0 55px rgba(232,174,73,.1);
+      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+      transform: scale(.94) translateY(24px); transition: transform 1s cubic-bezier(.18,.8,.2,1);
+    }
+    .card-topline { display: flex; align-items: center; justify-content: center; gap: 13px; margin-bottom: 12px; color: #e8c477; font: 10px Arial, sans-serif; letter-spacing: .34em; text-transform: uppercase; }
+    .card-topline::before, .card-topline::after { content: ""; width: 42px; height: 1px; background: linear-gradient(90deg, transparent, #dbb361); }
+    .card-topline::after { transform: rotate(180deg); }
+    .diwali-emblem { display: block; margin: 0 auto 5px; font-size: clamp(42px, 6vw, 58px); filter: drop-shadow(0 0 22px rgba(255,175,61,.56)); animation: emblem-float 3.4s ease-in-out infinite; }
+    .greeting-title { margin: 0; color: #ffe9ae; font-size: clamp(37px, 6.8vw, 68px); line-height: 1.02; font-weight: 400; letter-spacing: -.035em; text-shadow: 0 0 28px rgba(245,190,89,.23); }
+    .greeting-title span { display: block; margin-top: 8px; color: #f2be62; font-size: .56em; letter-spacing: .18em; text-transform: uppercase; }
+    .ornament { width: min(220px, 48%); height: 1px; margin: 18px auto 16px; background: linear-gradient(90deg, transparent, #e4bc6b, transparent); position: relative; }
+    .ornament::after { content: "✦"; position: absolute; left: 50%; top: 50%; padding: 0 10px; color: #f2cf88; background: #28132e; transform: translate(-50%,-50%); font-size: 13px; }
+    .wish-copy { max-width: 620px; margin: 0 auto; color: rgba(255,245,225,.9); font: 14.5px/1.78 Arial, sans-serif; letter-spacing: .012em; }
+    .wish-highlight { margin: 13px 0 0; color: #f5d38c; font: italic 16px/1.6 Georgia, serif; }
+    .sender { margin: 18px 0 0; color: #fff0c7; font: 11px Arial, sans-serif; letter-spacing: .28em; text-transform: uppercase; }
+    .sender strong { display: block; margin-top: 9px; color: #f3c76e; font: 400 29px Georgia, serif; letter-spacing: .08em; text-transform: none; }
+    .diya-row { display: flex; justify-content: center; gap: clamp(22px, 6vw, 50px); margin: 20px auto 18px; }
+    .mini-diya { position: relative; width: 36px; height: 15px; border-radius: 0 0 22px 22px; background: linear-gradient(#e7a64f,#71321f); box-shadow: 0 8px 22px rgba(255,123,24,.17); }
+    .mini-diya::before { content: ""; position: absolute; width: 12px; height: 20px; left: 12px; bottom: 10px; border-radius: 100% 0 100% 0; transform: rotate(45deg); transform-origin: bottom; background: radial-gradient(ellipse at 60% 70%, #fff9cd 0 18%, #ffcf55 40%, #ff701b 72%, transparent 74%); filter: drop-shadow(0 0 9px #ff9a34); animation: diya-flicker .75s ease-in-out infinite alternate; }
+    .mini-diya:nth-child(2)::before { animation-delay: -.3s; }
+    .mini-diya:nth-child(3)::before { animation-delay: -.5s; }
+    .mini-diya:nth-child(4)::before { animation-delay: -.2s; }
+    .greeting-actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+    .replay-button { border: 1px solid rgba(246,211,142,.45); border-radius: 999px; padding: 12px 21px; color: #f9e4b2; background: rgba(255,255,255,.04); font: 10px Arial,sans-serif; letter-spacing: .2em; text-transform: uppercase; cursor: pointer; transition: background .2s, transform .2s; }
+    .replay-button:hover { background: rgba(255,255,255,.1); transform: translateY(-2px); }
+    .tap-hint { margin: 17px 0 0; color: rgba(255,238,205,.44); font: 10px Arial,sans-serif; letter-spacing: .13em; }
+    .show-card { transform: scale(1) translateY(0); }
+    .greeting-title { opacity: 0; transform: translateY(18px); }
+    .greeting-title span { opacity: 0; transform: translateY(14px); }
+    .show-card .greeting-title { animation: headline-arrive .9s cubic-bezier(.2,.8,.2,1) .22s forwards; }
+    .show-card .greeting-title span { animation: headline-arrive .9s cubic-bezier(.2,.8,.2,1) .58s forwards; }
+    .wish-copy .wish-word { display: inline-block; opacity: 0; transform: translateY(10px); filter: blur(3px); }
+    .show-card .wish-copy .wish-word { animation: wish-word-arrive .55s cubic-bezier(.2,.75,.25,1) calc(.95s + var(--word-index) * .024s) forwards; }
+    .wish-highlight { opacity: 0; transform: translateY(10px); }
+    .show-card .wish-highlight { animation: soft-text-arrive .8s ease 2.7s forwards; }
+    .sender { opacity: 0; transform: translateY(10px); }
+    .show-card .sender { animation: soft-text-arrive .8s ease 3s forwards; }
+
+    .firefly { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: #ffe5a0; box-shadow: 0 0 12px 3px rgba(255,186,71,.55); opacity: 0; animation: firefly-drift 7s ease-in-out infinite; pointer-events: none; }
+    .firefly:nth-of-type(2) { left: 13%; top: 30%; animation-delay: -2s; }
+    .firefly:nth-of-type(3) { left: 83%; top: 24%; animation-delay: -4s; }
+    .firefly:nth-of-type(4) { left: 78%; top: 78%; animation-delay: -1s; }
+    .firefly:nth-of-type(5) { left: 18%; top: 76%; animation-delay: -5s; }
+    @keyframes orbit-turn { to { transform: rotate(360deg); } }
+    @keyframes stars-twinkle { from { opacity: .3; } to { opacity: .85; } }
+    @keyframes emblem-float { 0%,100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-8px) rotate(3deg); } }
+    @keyframes diya-flicker { from { transform: rotate(40deg) scale(.9); opacity: .88; } to { transform: rotate(50deg) scale(1.08); opacity: 1; } }
+    @keyframes firefly-drift { 0%,100% { transform: translate(0,20px); opacity: 0; } 25%,70% { opacity: .85; } 50% { transform: translate(28px,-34px); } }
+    @keyframes headline-arrive { from { opacity: 0; transform: perspective(500px) rotateX(-55deg) translateY(22px) scale(.94); filter: blur(7px); } to { opacity: 1; transform: perspective(500px) rotateX(0) translateY(0) scale(1); filter: blur(0); } }
+    @keyframes wish-word-arrive { from { opacity: 0; transform: perspective(450px) rotateX(-65deg) translateY(12px) scale(.92); filter: blur(5px); } to { opacity: 1; transform: perspective(450px) rotateX(0) translateY(0) scale(1); filter: blur(0); } }
+    @keyframes soft-text-arrive { to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 600px) {
+      .launch-ui { bottom: 24px; padding: 20px 17px 18px; }
+      .sound-toggle { top: 12px; right: 12px; }
+      #greetingModal::before { inset: 8px; border-radius: 17px; }
+      #greetingModal::after { inset: 15px; border-radius: 13px; }
+      .greeting-card { padding: 22px 18px 22px; border-radius: 19px; }
+      .wish-copy { font-size: 13px; line-height: 1.68; }
+      .wish-highlight { font-size: 15px; }
+      .sender { margin-top: 20px; }
+    }
+
+    /* =====================================================================
+       RESPONSIVE LAYOUT: phones, tablets, laptops and large desktop screens
+       ===================================================================== */
+    html {
+      min-width: 320px;
+      min-height: 100%;
+      height: 100%;
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+      overscroll-behavior: none;
+    }
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      min-height: 100dvh;
+      height: 100%;
+      overscroll-behavior: none;
+    }
+    #sceneCanvas {
+      width: 100%;
+      height: 100vh;
+      height: 100dvh;
+      max-width: 100%;
+      touch-action: manipulation;
+    }
+    .launch-ui {
+      width: min(92vw, 620px);
+      max-width: calc(100vw - env(safe-area-inset-left) - env(safe-area-inset-right) - 24px);
+      max-height: calc(100vh - 28px);
+      max-height: calc(100dvh - 28px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      bottom: max(20px, calc(env(safe-area-inset-bottom) + 14px));
+    }
+    .gold-button,
+    .replay-button {
+      min-height: 46px;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .greeting-card {
+      width: min(100%, 780px);
+      max-width: calc(100vw - 36px - env(safe-area-inset-left) - env(safe-area-inset-right));
+      max-height: calc(100vh - 36px);
+      max-height: calc(100dvh - 28px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(242,205,124,.35) transparent;
+    }
+    .greeting-card::-webkit-scrollbar { width: 5px; }
+    .greeting-card::-webkit-scrollbar-thumb { border-radius: 99px; background: rgba(242,205,124,.28); }
+    .wish-copy { overflow-wrap: break-word; word-break: normal; }
+    .greeting-title,
+    .greeting-title span { text-wrap: balance; }
+    .gold-button:focus-visible,
+    .replay-button:focus-visible,
+    .sound-toggle:focus-visible {
+      outline: 2px solid #fff0bd;
+      outline-offset: 4px;
+    }
+
+    /* Phones in portrait orientation */
+    @media (max-width: 600px) {
+      .launch-ui {
+        left: 50%;
+        bottom: max(16px, calc(env(safe-area-inset-bottom) + 12px));
+        width: calc(100vw - 28px);
+        max-width: 480px;
+        padding: 18px 16px 17px;
+        border-radius: 20px;
+      }
+      .eyebrow { font-size: 9px; letter-spacing: .24em; }
+      .launch-title { font-size: clamp(25px, 7.6vw, 35px); line-height: 1.12; }
+      .launch-copy { margin: 8px 0 14px; font-size: 12px; line-height: 1.5; }
+      .gold-button { width: 100%; min-height: 48px; padding: 13px 16px; font-size: 10px; letter-spacing: .15em; }
+
+      #greetingModal {
+        min-height: 100vh;
+        min-height: 100dvh;
+        padding: max(14px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      #greetingModal::before { inset: 7px; border-radius: 17px; }
+      #greetingModal::after { inset: 13px; border-radius: 13px; }
+      .greeting-card {
+        width: 100%;
+        max-width: 480px;
+        max-height: calc(100vh - 28px);
+        max-height: calc(100dvh - 28px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+        padding: 20px 16px 18px;
+        border-radius: 19px;
+      }
+      .card-topline { gap: 9px; margin-bottom: 9px; font-size: 9px; letter-spacing: .22em; }
+      .card-topline::before, .card-topline::after { width: 28px; }
+      .diwali-emblem { margin-bottom: 4px; font-size: clamp(40px, 11vw, 52px); }
+      .greeting-title { font-size: clamp(34px, 9.5vw, 48px); line-height: 1.04; }
+      .greeting-title span { margin-top: 7px; font-size: .48em; line-height: 1.32; letter-spacing: .115em; }
+      .ornament { margin: 14px auto 12px; }
+      .wish-copy { font-size: clamp(12px, 3.45vw, 13.5px); line-height: 1.62; }
+      .wish-highlight { margin-top: 10px; font-size: 14px; line-height: 1.5; }
+      .diya-row { gap: clamp(16px, 5.2vw, 28px); margin: 16px auto 14px; }
+      .sender { margin-top: 13px; font-size: 10px; letter-spacing: .2em; }
+      .sender strong { margin-top: 7px; font-size: 26px; }
+      .replay-button { min-height: 46px; padding: 12px 19px; font-size: 9px; letter-spacing: .15em; }
+      .tap-hint { margin-top: 12px; font-size: 9px; line-height: 1.45; letter-spacing: .06em; }
+    }
+
+    /* Narrow phones */
+    @media (max-width: 360px) {
+      .launch-ui { width: calc(100vw - 22px); padding: 16px 13px 15px; }
+      .launch-title { font-size: 25px; }
+      .launch-copy { font-size: 11px; }
+      .greeting-card { padding: 17px 13px 15px; }
+      .greeting-title { font-size: clamp(31px, 9.3vw, 38px); }
+      .greeting-title span { font-size: .45em; letter-spacing: .09em; }
+      .wish-copy { font-size: 12px; line-height: 1.56; }
+      .diya-row { gap: 15px; margin: 13px auto 12px; }
+      .sender strong { font-size: 24px; }
+    }
+
+    /* Tablets */
+    @media (min-width: 601px) and (max-width: 1024px) {
+      .launch-ui { width: min(84vw, 600px); padding: 23px 28px 21px; }
+      .greeting-card { width: min(92vw, 760px); padding: 30px clamp(28px, 5vw, 48px); }
+      .wish-copy { font-size: 14px; }
+    }
+
+    /* Landscape phones and compact laptop windows */
+    @media (max-height: 560px) and (orientation: landscape) {
+      .launch-ui {
+        bottom: max(8px, env(safe-area-inset-bottom));
+        width: min(560px, calc(100vw - 24px));
+        padding: 12px 20px 11px;
+        border-radius: 17px;
+      }
+      .eyebrow { margin-bottom: 4px; font-size: 8px; }
+      .launch-title { font-size: clamp(22px, 4.5vh, 30px); }
+      .launch-copy { margin: 5px 0 9px; font-size: 11px; }
+      .gold-button { min-height: 42px; padding: 10px 18px; }
+      #greetingModal { padding: 10px max(18px, env(safe-area-inset-right)) 10px max(18px, env(safe-area-inset-left)); }
+      #greetingModal::before { inset: 5px; }
+      #greetingModal::after { inset: 10px; }
+      .greeting-card {
+        width: min(100%, 780px);
+        max-height: calc(100dvh - 20px);
+        padding: 12px 24px 12px;
+        border-radius: 17px;
+      }
+      .card-topline { margin-bottom: 4px; font-size: 8px; }
+      .diwali-emblem { margin-bottom: 0; font-size: 32px; }
+      .greeting-title { font-size: clamp(30px, 7vh, 42px); }
+      .greeting-title span { margin-top: 4px; }
+      .ornament { margin: 8px auto 7px; }
+      .wish-copy { font-size: 12px; line-height: 1.45; }
+      .wish-highlight { margin-top: 5px; font-size: 13px; }
+      .diya-row { gap: 22px; margin: 10px auto 8px; }
+      .sender { margin-top: 8px; font-size: 9px; }
+      .sender strong { margin-top: 3px; font-size: 22px; }
+      .replay-button { min-height: 40px; padding: 9px 18px; }
+      .tap-hint { margin-top: 6px; font-size: 8px; }
+    }
+
+    @media (hover: none) {
+      .gold-button:hover,
+      .replay-button:hover { transform: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="sceneCanvas" aria-label="Animated Diwali courtyard with a rising rocket and fireworks"></canvas>
+  <div id="skyFlash"></div>
+
+  <button class="sound-toggle" id="soundToggleBtn" type="button" aria-label="Toggle sound">
+    <span id="soundIcon">🔇</span><span id="soundLabel">TAP FOR SOUND</span>
+  </button>
+
+  <section class="launch-ui" id="launchUiContainer">
+    <p class="eyebrow">A little light, a little wonder</p>
+    <h1 class="launch-title">A Diwali Spark Awaits</h1>
+    <p class="launch-copy">Light the rocket and let the celebration begin.</p>
+    <button class="gold-button" id="lightUpBtn" type="button">Light the celebration ✦</button>
+  </section>
+
+  <section id="greetingModal" aria-live="polite" aria-label="Diwali greeting">
+    <div class="greeting-stars"></div>
+    <div class="greeting-orbit"></div>
+    <span class="firefly" style="left:30%;top:18%"></span>
+    <span class="firefly"></span><span class="firefly"></span><span class="firefly"></span><span class="firefly"></span>
+    <div class="greeting-card">
+      <div class="card-topline">The festival of lights</div>
+      <span class="diwali-emblem" aria-hidden="true">🪔</span>
+      <h2 class="greeting-title">Happy Diwali !<span>and a bright new beginning</span></h2>
+      <div class="ornament"></div>
+      <p class="wish-copy">“wishing you a Happy and Safe Diwali ! May every diya bring warmth to your home, happiness to your heart, peace to your mind, and prosperity to the days ahead. Celebrate with joy, sweets, and laughter, and may this festival of lights make your year brighter.”</p>
+      <p class="wish-highlight">A celebration of light and beautiful new beginnings.</p>
+      <div class="diya-row" aria-hidden="true"><span class="mini-diya"></span><span class="mini-diya"></span><span class="mini-diya"></span><span class="mini-diya"></span></div>
+      <p class="sender">With warm wishes from<strong>Sanjayy</strong></p>
+      <div class="ornament"></div>
+      <div class="greeting-actions"><button class="replay-button" id="replayBtn" type="button">↻ Replay the magic</button></div>
+      <p class="tap-hint">Tap anywhere on the sky to create another little sparkle</p>
+    </div>
+  </section>
+
+  <script>
+    const canvas = document.getElementById('sceneCanvas');
+    const ctx = canvas.getContext('2d');
+    const skyFlash = document.getElementById('skyFlash');
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    let dpr = 1;
+    let stage = 'IDLE';
+    let camY = 0;
+    let targetCamY = 0;
+    let screenShake = 0;
+    let fuseBurnTimer = 0;
+    let rocketFlightTimer = 0;
+    let musicStartTimeout = null;
+    const fastFuseDuration = 0.78;
+    const rocketFlightDuration = 4.0;
+
+    const stars = [];
+    const lanterns = [];
+    let courtyardDiyas = [];
+    const sparks = [];
+    const rocketTrailSparks = [];
+    const exhaustParticles = [];
+    const shockwaves = [];
+    const fireworkParticles = [];
+    let rocketFireBlast = null;
+
+    // Sound effects play during the launch sequence; the festive melody begins only after detonation.
+    // Audio is unlocked by the visitor pressing the launch or sound button.
+    const audio = (() => {
+      let audioContext = null;
+      let enabled = false;
+      let lastSizzleAt = 0;
+      let lastFootstepAt = 0;
+      let musicBus = null;
+      let musicTimer = null;
+      let noteIndex = 0;
+      const melody = [523.25, 659.25, 783.99, 659.25, 587.33, 698.46, 880, 698.46, 523.25, 659.25, 783.99, 987.77];
+
+      function init() {
+        if (!audioContext) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) audioContext = new AudioCtx();
+        }
+        if (audioContext && audioContext.state === 'suspended') audioContext.resume();
+        return !!audioContext;
+      }
+
+      function enable() {
+        if (!init()) return false;
+        enabled = true;
+        if (audioContext.state === 'suspended') audioContext.resume();
+        return true;
+      }
+
+      function tone(frequency, duration, type = 'sine', volume = 0.05, endFrequency = null) {
+        if (!enabled || !audioContext) return;
+        const now = audioContext.currentTime;
+        const oscillator = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        oscillator.type = type;
+        oscillator.frequency.setValueAtTime(frequency, now);
+        if (endFrequency) oscillator.frequency.exponentialRampToValueAtTime(Math.max(1, endFrequency), now + duration);
+        gain.gain.setValueAtTime(volume, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+        oscillator.connect(gain);
+        gain.connect(audioContext.destination);
+        oscillator.start(now);
+        oscillator.stop(now + duration);
+      }
+
+      function noise(duration = 0.25, volume = 0.035) {
+        if (!enabled || !audioContext) return;
+        const size = Math.max(1, Math.floor(audioContext.sampleRate * duration));
+        const buffer = audioContext.createBuffer(1, size, audioContext.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < size; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / size);
+        const source = audioContext.createBufferSource();
+        const gain = audioContext.createGain();
+        gain.gain.setValueAtTime(volume, audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + duration);
+        source.buffer = buffer;
+        source.connect(gain);
+        gain.connect(audioContext.destination);
+        source.start();
+      }
+
+      function playMusicNote() {
+        if (!enabled || !audioContext || !musicBus) return;
+        const now = audioContext.currentTime;
+        const frequency = melody[noteIndex % melody.length];
+        noteIndex++;
+        const osc = audioContext.createOscillator();
+        const overtone = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        const overtoneGain = audioContext.createGain();
+        osc.type = 'sine';
+        overtone.type = 'sine';
+        osc.frequency.setValueAtTime(frequency, now);
+        overtone.frequency.setValueAtTime(frequency * 2.01, now);
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.linearRampToValueAtTime(0.034, now + 0.045);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.05);
+        overtoneGain.gain.setValueAtTime(0.0001, now);
+        overtoneGain.gain.linearRampToValueAtTime(0.009, now + 0.035);
+        overtoneGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
+        osc.connect(gain);
+        gain.connect(musicBus);
+        overtone.connect(overtoneGain);
+        overtoneGain.connect(musicBus);
+        osc.start(now);
+        overtone.start(now);
+        osc.stop(now + 1.08);
+        overtone.stop(now + 0.48);
+      }
+
+      function startMusic() {
+        if (!enabled || !init()) return false;
+        if (!musicBus) {
+          musicBus = audioContext.createGain();
+          musicBus.gain.setValueAtTime(0, audioContext.currentTime);
+          musicBus.connect(audioContext.destination);
+          // Soft sustained tones underneath the bright bell-like melody.
+          [130.81, 196, 261.63].forEach((frequency, index) => {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.type = index === 2 ? 'triangle' : 'sine';
+            osc.frequency.value = frequency;
+            gain.gain.value = index === 2 ? 0.012 : 0.018;
+            osc.connect(gain);
+            gain.connect(musicBus);
+            osc.start();
+          });
+        }
+        musicBus.gain.cancelScheduledValues(audioContext.currentTime);
+        musicBus.gain.setTargetAtTime(0.72, audioContext.currentTime, 0.45);
+        if (musicTimer === null) {
+          noteIndex = 0;
+          playMusicNote();
+          musicTimer = window.setInterval(playMusicNote, 720);
+        }
+        return true;
+      }
+
+      function stopMusic() {
+        if (musicTimer !== null) {
+          window.clearInterval(musicTimer);
+          musicTimer = null;
+        }
+        if (audioContext && musicBus) {
+          musicBus.gain.cancelScheduledValues(audioContext.currentTime);
+          musicBus.gain.setTargetAtTime(0, audioContext.currentTime, 0.18);
+        }
+      }
+
+      function stop() {
+        enabled = false;
+        stopMusic();
+      }
+
+      return {
+        init,
+        enable,
+        startMusic,
+        stopMusic,
+        isEnabled() { return enabled; },
+        toggle() {
+          if (enabled) stop();
+          else {
+            enable();
+            // When sound is turned back on after the reveal, resume the music there;
+            // before the blast, keep the audio limited to effects.
+            if (stage === 'SKY_BLAST' || stage === 'GREETING_REVEALED') startMusic();
+          }
+          return enabled;
+        },
+        playFootstep(running = false) {
+          if (!enabled || !audioContext) return;
+          const now = performance.now();
+          const interval = running ? 190 : 285;
+          if (now - lastFootstepAt < interval) return;
+          lastFootstepAt = now;
+          noise(0.055, running ? 0.028 : 0.022);
+          tone(running ? 132 : 108, 0.075, 'triangle', running ? 0.032 : 0.026, 58);
+        },
+        playFuseIgnite() {
+          noise(0.24, 0.038);
+          tone(980, 0.16, 'square', 0.014, 320);
+        },
+        playSizzle() {
+          const now = performance.now();
+          if (now - lastSizzleAt > 125) {
+            lastSizzleAt = now;
+            noise(0.085, 0.016);
+            tone(1450, 0.045, 'triangle', 0.007, 880);
+          }
+        },
+        playRocketWhoosh(duration = 4.0) {
+          // A continuous rising/falling whoosh that spans the full four-second flight.
+          noise(duration, 0.052);
+          tone(165, duration, 'sawtooth', 0.03, 42);
+        },
+        playDetonation() {
+          noise(0.92, 0.145);
+          tone(82, 0.88, 'sine', 0.14, 25);
+          tone(520, 0.28, 'triangle', 0.052, 95);
+          noise(0.24, 0.035);
+        },
+        playPop() { tone(580 + Math.random() * 380, 0.12, 'sine', 0.025, 180); }
+      };
+    })();
+
+    const rocket = {
+      x: 0,
+
+      y: 0,
+      z: 0,
+      baseX: 0,
+      baseY: 0,
+      width: 44,
+      height: 125,
+      stickLen: 175,
+      vy: 0,
+      ay: 0,
+      tilt: 0.04
+    };
+
+    // The Little Boy Character
+    const boy = {
+      x: -180,
+      y: 0,
+      targetX: 0,
+      walkCycle: 0,
+      crouchProgress: 0,
+      headGazeAngle: 0,
+      earsCovered: false,
+      state: 'HIDDEN',
+      agarbattiSmoke: []
+    };
+
+    // Jute fuse curve
+    const fuseCurve = {
+      startX: 0,
+      startY: 0,
+      ctrlX: 0,
+      ctrlY: 0,
+      endX: 0,
+      endY: 0,
+      burnProgress: 0
+    };
+
+    function resize() {
+      // visualViewport tracks the usable area on mobile browsers as their
+      // address bars expand/collapse and when the device rotates.
+      const viewport = window.visualViewport;
+      const nextWidth = Math.max(1, Math.round(viewport?.width || window.innerWidth));
+      const nextHeight = Math.max(1, Math.round(viewport?.height || window.innerHeight));
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      width = nextWidth;
+      height = nextHeight;
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      initSceneGeometry();
+      // Keep the rocket centred if the screen rotates during the experience.
+      if (stage === 'ROCKET_LAUNCH') rocket.x = rocket.baseX;
+    }
+
+    let viewportResizeFrame = 0;
+    function scheduleViewportResize() {
+      if (viewportResizeFrame) cancelAnimationFrame(viewportResizeFrame);
+      viewportResizeFrame = requestAnimationFrame(() => {
+        viewportResizeFrame = 0;
+        resize();
+      });
+    }
+
+    function initSceneGeometry() {
+      const groundY = height * 0.77;
+
+      rocket.baseX = width * 0.5;
+      rocket.baseY = groundY;
+
+      if (stage === 'IDLE' || stage === 'BOY_APPROACH' || stage === 'BOY_CROUCH_GAZE' || stage === 'FUSE_BURNING') {
+        rocket.x = rocket.baseX;
+        rocket.y = rocket.baseY - 145;
+        rocket.z = 0;
+        rocket.vy = 0;
+        rocket.ay = 0;
+      }
+
+      boy.y = groundY;
+      boy.targetX = rocket.baseX - 110;
+      if (boy.state === 'HIDDEN') {
+        boy.x = -160;
+      }
+
+      fuseCurve.startX = rocket.baseX;
+      fuseCurve.startY = rocket.baseY - 65;
+      fuseCurve.ctrlX = rocket.baseX - 40;
+      fuseCurve.ctrlY = groundY + 12;
+      fuseCurve.endX = rocket.baseX - 90;
+      fuseCurve.endY = groundY - 2;
+
+      courtyardDiyas = [
+        { x: width * 0.08, y: groundY + 18, scale: 1.25 },
+        { x: width * 0.19, y: groundY - 10, scale: 1.0 },
+        { x: width * 0.32, y: groundY + 22, scale: 1.15 },
+        { x: width * 0.69, y: groundY + 20, scale: 1.3 },
+        { x: width * 0.82, y: groundY - 12, scale: 1.05 },
+        { x: width * 0.93, y: groundY + 18, scale: 1.2 }
+      ];
+
+      if (stars.length === 0) {
+        for (let i = 0; i < 220; i++) {
+          stars.push({
+            x: Math.random() * width,
+            y: Math.random() * (height * 3) - (height * 2.2),
+            radius: Math.random() * 1.8 + 0.4,
+            opacity: Math.random() * 0.8 + 0.2
+          });
+        }
+      }
+
+      if (lanterns.length === 0) {
+        for (let i = 0; i < 35; i++) {
+          lanterns.push({
+            x: Math.random() * width,
+            y: Math.random() * (height * 2.6) - (height * 1.9),
+            z: Math.random() * 300 - 150,
+            size: Math.random() * 16 + 18,
+            speedY: Math.random() * 0.35 + 0.2,
+            wobble: Math.random() * Math.PI * 2,
+            wobbleSpeed: Math.random() * 0.03 + 0.015,
+            alpha: Math.random() * 0.35 + 0.65
+          });
+        }
+      }
+    }
+
+    window.addEventListener('resize', scheduleViewportResize, { passive: true });
+    window.addEventListener('orientationchange', scheduleViewportResize, { passive: true });
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', scheduleViewportResize, { passive: true });
+    }
+    resize();
+
+    /* =========================================================================
+       DOM CONTROLS & LISTENERS
+       ========================================================================= */
+    const lightUpBtn = document.getElementById('lightUpBtn');
+    const launchUi = document.getElementById('launchUiContainer');
+    const greetingModal = document.getElementById('greetingModal');
+    const replayBtn = document.getElementById('replayBtn');
+    const soundToggleBtn = document.getElementById('soundToggleBtn');
+    const soundIcon = document.getElementById('soundIcon');
+    const soundLabel = document.getElementById('soundLabel');
+
+    // Wrap every word separately so the blessing can flow onto the screen one word at a time.
+    const wishCopy = document.querySelector('.wish-copy');
+    if (wishCopy) {
+      const fullWish = wishCopy.textContent.trim();
+      wishCopy.setAttribute('aria-label', fullWish);
+      wishCopy.replaceChildren();
+      fullWish.split(/\s+/).forEach((word, index, words) => {
+        const span = document.createElement('span');
+        span.className = 'wish-word';
+        span.textContent = word;
+        span.style.setProperty('--word-index', index);
+        span.setAttribute('aria-hidden', 'true');
+        wishCopy.appendChild(span);
+        if (index < words.length - 1) wishCopy.appendChild(document.createTextNode(' '));
+      });
+    }
+
+    function syncSoundButton() {
+      const on = audio.isEnabled();
+      soundIcon.textContent = on ? '🔊' : '🔇';
+      soundLabel.textContent = on ? 'SOUND ON' : 'TAP FOR SOUND';
+      soundToggleBtn.setAttribute('aria-label', on ? 'Turn sound off' : 'Turn sound on');
+    }
+
+    soundToggleBtn.addEventListener('click', () => {
+      audio.toggle();
+      syncSoundButton();
+    });
+
+    lightUpBtn.addEventListener('click', () => {
+      audio.enable();
+      syncSoundButton();
+      if (stage !== 'IDLE') return;
+
+      launchUi.style.opacity = '0';
+      launchUi.style.pointerEvents = 'none';
+
+      stage = 'BOY_APPROACH';
+      boy.state = 'WALKING_IN';
+    });
+
+    replayBtn.addEventListener('click', () => {
+      resetExperience();
+    });
+
+    greetingModal.addEventListener('pointerdown', (e) => {
+      if (e.target.closest('.greeting-card')) return;
+      audio.init();
+      const palette = getRandomColorPalette();
+      create3DFireworksBlast(e.clientX, e.clientY - camY, (Math.random() - 0.5) * 60, 125, palette);
+      audio.playPop();
+    });
+
+    canvas.addEventListener('pointerdown', (e) => {
+      audio.init();
+      const rect = canvas.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const clickY = e.clientY - rect.top;
+
+      if (stage === 'GREETING_REVEALED' || stage === 'SKY_BLAST') {
+        create3DFireworksBlast(clickX, clickY - camY, (Math.random() - 0.5) * 80, 120, getRandomColorPalette());
+        audio.playPop();
+      }
+    });
+
+    function resetExperience() {
+      greetingModal.style.opacity = '0';
+      greetingModal.style.pointerEvents = 'none';
+      const card = greetingModal.querySelector('.greeting-card');
+      card.classList.remove('show-card');
+      card.style.transform = 'scale(0.94) translateY(24px)';
+
+      targetCamY = 0;
+      camY = 0;
+
+      stage = 'IDLE';
+      if (musicStartTimeout !== null) {
+        clearTimeout(musicStartTimeout);
+        musicStartTimeout = null;
+      }
+      audio.stopMusic();
+      fuseBurnTimer = 0;
+      rocketFlightTimer = 0;
+      fuseCurve.burnProgress = 0;
+      rocketFireBlast = null;
+      sparks.length = 0;
+      rocketTrailSparks.length = 0;
+      exhaustParticles.length = 0;
+      shockwaves.length = 0;
+      fireworkParticles.length = 0;
+      rocket.y = rocket.baseY - 145;
+      rocket.z = 0;
+      rocket.vy = 0;
+      rocket.ay = 0;
+
+      boy.x = -160;
+      boy.state = 'HIDDEN';
+      boy.crouchProgress = 0;
+      boy.headGazeAngle = 0;
+      boy.earsCovered = false;
+
+      setTimeout(() => {
+        launchUi.style.opacity = '1';
+        launchUi.style.pointerEvents = 'auto';
+      }, 500);
+    }
+
+    /* =========================================================================
+       PARTICLE & ASCENT EFFECTS GENERATION
+       ========================================================================= */
+    function addSparks(x, y, count = 8, spread = 4.5) {
+      for (let i = 0; i < count; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * spread + 1.5;
+        sparks.push({
+          x: x,
+          y: y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - 1.2,
+          life: 1.0,
+          decay: Math.random() * 0.05 + 0.03,
+          color: Math.random() > 0.3 ? '#ffe680' : '#ff7a18',
+          size: Math.random() * 3 + 1.5
+        });
+      }
+    }
+
+    // Rocket Golden Ascent Tail Particles
+    function addRocketAscentTail(x, y) {
+      for (let i = 0; i < 6; i++) {
+        const angle = (Math.PI / 2) + (Math.random() - 0.5) * 0.7;
+        const speed = Math.random() * 6 + 3;
+        rocketTrailSparks.push({
+          x: x + (Math.random() - 0.5) * 8,
+          y: y + Math.random() * 10,
+          vx: Math.cos(angle) * speed * 0.5,
+          vy: Math.sin(angle) * speed + 3,
+          life: 1.0,
+          decay: Math.random() * 0.05 + 0.035,
+          size: Math.random() * 3.2 + 1.5,
+          color: ['#ffffff', '#fff2a8', '#ffd700', '#ff9400'][Math.floor(Math.random() * 4)]
+        });
+      }
+    }
+
+    function addExhaustSmoke(x, y) {
+      for (let i = 0; i < 9; i++) {
+        exhaustParticles.push({
+          x: x + (Math.random() - 0.5) * 16,
+          y: y,
+          vx: (Math.random() - 0.5) * 3.5,
+          vy: Math.random() * 9 + 5.5,
+          life: 1.0,
+          decay: Math.random() * 0.045 + 0.02,
+          size: Math.random() * 16 + 9,
+          color: ['#fff7cc', '#ffb732', '#ff4d00', '#4a1e00'][Math.floor(Math.random() * 4)]
+        });
+      }
+    }
+
+
+    // Hot expanding fireball + flame fragments at the rocket's apex.
+    function createRocketFireBlast(x, y) {
+      rocketFireBlast = { x, y, age: 0, particles: [] };
+      for (let i = 0; i < 150; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 85 + Math.random() * 440;
+        rocketFireBlast.particles.push({
+          x, y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          life: .8 + Math.random() * .65,
+          maxLife: .8 + Math.random() * .65,
+          size: 5 + Math.random() * 17,
+          hue: [18, 28, 39, 48][Math.floor(Math.random() * 4)]
+        });
+      }
+    }
+
+    function drawRocketFireBlast(c, dt) {
+      if (!rocketFireBlast) return;
+      const blast = rocketFireBlast;
+      blast.age += dt;
+      c.save();
+      c.globalCompositeOperation = 'lighter';
+
+      // Bright central flash quickly expands and cools from white to amber.
+      if (blast.age < .72) {
+        const fade = Math.max(0, 1 - blast.age / .72);
+        const radius = 28 + blast.age * 330;
+        const core = c.createRadialGradient(blast.x, blast.y, 0, blast.x, blast.y, radius);
+        core.addColorStop(0, `rgba(255,255,225,${fade * .95})`);
+        core.addColorStop(.16, `rgba(255,238,143,${fade * .85})`);
+        core.addColorStop(.42, `rgba(255,123,28,${fade * .55})`);
+        core.addColorStop(1, 'rgba(255,55,0,0)');
+        c.fillStyle = core;
+        c.beginPath(); c.arc(blast.x, blast.y, radius, 0, Math.PI * 2); c.fill();
+      }
+
+      for (let i = blast.particles.length - 1; i >= 0; i--) {
+        const p = blast.particles[i];
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.vx *= Math.pow(.965, dt * 60);
+        p.vy = p.vy * Math.pow(.965, dt * 60) + 45 * dt;
+        p.life -= dt;
+        if (p.life <= 0) { blast.particles.splice(i, 1); continue; }
+        const alpha = Math.min(1, p.life / .35);
+        const radius = p.size * (.45 + alpha * .75);
+        const flame = c.createRadialGradient(p.x, p.y, 0, p.x, p.y, radius * 2.4);
+        flame.addColorStop(0, `hsla(${p.hue + 12},100%,94%,${alpha})`);
+        flame.addColorStop(.22, `hsla(${p.hue},100%,63%,${alpha * .95})`);
+        flame.addColorStop(.7, `hsla(${Math.max(4,p.hue - 8)},100%,48%,${alpha * .55})`);
+        flame.addColorStop(1, `hsla(${Math.max(0,p.hue - 14)},100%,35%,0)`);
+        c.fillStyle = flame;
+        c.beginPath(); c.arc(p.x, p.y, radius * 2.4, 0, Math.PI * 2); c.fill();
+      }
+      c.restore();
+      if (blast.age > 2.4 && blast.particles.length === 0) rocketFireBlast = null;
+    }
+
+    // 3D Spherical Fireworks Blast
+    function create3DFireworksBlast(cx, cy, cz = 0, count = 220, palette) {
+      shockwaves.push({
+        x: cx,
+        y: cy,
+        radius: 10,
+        maxRadius: 320,
+        tilt: 0.35,
+        alpha: 1.0,
+        color: palette[0]
+      });
+
+      for (let i = 0; i < count; i++) {
+        const u = Math.random();
+        const v = Math.random();
+        const theta = u * 2.0 * Math.PI;
+        const phi = Math.acos(2.0 * v - 1.0);
+        const speed = Math.pow(Math.random(), 0.32) * 16 + 3.8;
+
+        const vx = speed * Math.sin(phi) * Math.cos(theta);
+        const vy = speed * Math.sin(phi) * Math.sin(theta);
+        const vz = speed * Math.cos(phi);
+
+        fireworkParticles.push({
+          x: cx,
+          y: cy,
+          z: cz,
+          vx: vx,
+          vy: vy,
+          vz: vz,
+          drag: 0.965,
+          gravity: 0.09,
+          life: 1.0,
+          decay: Math.random() * 0.013 + 0.008,
+          size: Math.random() * 4.5 + 2.5,
+          color: palette[Math.floor(Math.random() * palette.length)],
+          trail: []
+        });
+      }
+    }
+
+    function getRandomColorPalette() {
+      const palettes = [
+        ['#ffd700', '#ffae19', '#fff7c2', '#ff5722'],
+        ['#00f5ff', '#ff00aa', '#ffd700', '#ffffff'],
+        ['#55ff99', '#ffd700', '#ff2a6d', '#05d9e8'],
+        ['#ffffff', '#ffdf80', '#e6b800', '#ff8c00']
+      ];
+      return palettes[Math.floor(Math.random() * palettes.length)];
+    }
+
+    /* =========================================================================
+       CANVAS RENDERING: COURTYARD, ARCHITECTURE & DIYAS
+       ========================================================================= */
+    function drawCourtyardBackground(c) {
+      const groundY = height * 0.77;
+
+      const skyGrad = c.createLinearGradient(0, -height * 2.2, 0, groundY);
+      skyGrad.addColorStop(0, '#020108');
+      skyGrad.addColorStop(0.35, '#070213');
+      skyGrad.addColorStop(0.65, '#170628');
+      skyGrad.addColorStop(1, '#340f2f');
+      c.fillStyle = skyGrad;
+      c.fillRect(0, -height * 2.2, width, height * 3.2);
+
+      const time = performance.now() * 0.001;
+      for (let i = 0; i < 5; i++) {
+        const bx = (width * 0.15) + (i * width * 0.2);
+        const by = height * 0.25 + Math.sin(time + i * 1.5) * 18;
+        const bGrad = c.createRadialGradient(bx, by, 0, bx, by, 90 + i * 15);
+        bGrad.addColorStop(0, 'rgba(255, 185, 60, 0.14)');
+        bGrad.addColorStop(1, 'rgba(255, 185, 60, 0)');
+        c.fillStyle = bGrad;
+        c.beginPath();
+        c.arc(bx, by, 100, 0, Math.PI * 2);
+        c.fill();
+      }
+
+      const wallH = 260;
+      const wallGrad = c.createLinearGradient(0, groundY - wallH, 0, groundY);
+      wallGrad.addColorStop(0, '#150824');
+      wallGrad.addColorStop(0.5, '#220d34');
+      wallGrad.addColorStop(1, '#13061d');
+      c.fillStyle = wallGrad;
+      c.fillRect(0, groundY - wallH, width, wallH);
+
+      const archW = Math.min(width * 0.28, 230);
+      const numArches = Math.ceil(width / archW) + 2;
+      for (let i = -1; i < numArches; i++) {
+        const archX = i * archW;
+        const archTopY = groundY - 240;
+
+        c.save();
+        c.beginPath();
+        c.moveTo(archX, groundY);
+        c.lineTo(archX, archTopY + 80);
+        c.quadraticCurveTo(archX + archW * 0.2, archTopY + 20, archX + archW * 0.5, archTopY);
+        c.quadraticCurveTo(archX + archW * 0.8, archTopY + 20, archX + archW, archTopY + 80);
+        c.lineTo(archX + archW, groundY);
+        c.fillStyle = '#0c0316';
+        c.fill();
+
+        c.strokeStyle = 'rgba(212, 175, 55, 0.25)';
+        c.lineWidth = 2.5;
+        c.stroke();
+        c.restore();
+
+        drawMarigoldGarland(c, archX, archTopY + 80, archX + archW, archTopY + 80, 42);
+      }
+
+      drawFairyLights(c, 0, groundY - 200, width, groundY - 200);
+
+      const floorGrad = c.createLinearGradient(0, groundY, 0, height + 100);
+      floorGrad.addColorStop(0, '#1c0c27');
+      floorGrad.addColorStop(0.3, '#14071d');
+      floorGrad.addColorStop(1, '#07020a');
+      c.fillStyle = floorGrad;
+      c.fillRect(0, groundY, width, height - groundY + 200);
+
+      c.strokeStyle = 'rgba(212, 175, 55, 0.08)';
+      c.lineWidth = 1.2;
+      for (let y = groundY; y < height + 100; y += 42) {
+        c.beginPath();
+        c.moveTo(0, y);
+        c.lineTo(width, y);
+        c.stroke();
+      }
+
+      const poolGlow = c.createRadialGradient(rocket.baseX, groundY + 12, 10, rocket.baseX, groundY + 12, 210);
+      poolGlow.addColorStop(0, 'rgba(255, 175, 50, 0.38)');
+      poolGlow.addColorStop(0.5, 'rgba(255, 120, 0, 0.12)');
+      poolGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      c.fillStyle = poolGlow;
+      c.beginPath();
+      c.ellipse(rocket.baseX, groundY + 14, 210, 55, 0, 0, Math.PI * 2);
+      c.fill();
+    }
+
+    function drawMarigoldGarland(c, x1, y1, x2, y2, sag) {
+      const midX = (x1 + x2) / 2;
+      const midY = (y1 + y2) / 2 + sag;
+      const petals = 18;
+
+      for (let i = 0; i <= petals; i++) {
+        const t = i / petals;
+        const px = (1 - t) * (1 - t) * x1 + 2 * (1 - t) * t * midX + t * t * x2;
+        const py = (1 - t) * (1 - t) * y1 + 2 * (1 - t) * t * midY + t * t * y2;
+
+        c.beginPath();
+        c.arc(px, py, 4.5, 0, Math.PI * 2);
+        c.fillStyle = i % 2 === 0 ? '#ff8c00' : '#ffd700';
+        c.fill();
+      }
+    }
+
+    function drawFairyLights(c, x1, y1, x2, y2) {
+      c.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+      c.lineWidth = 1;
+      c.beginPath();
+      c.moveTo(x1, y1);
+      c.lineTo(x2, y2);
+      c.stroke();
+
+      const time = performance.now() * 0.003;
+      const step = 42;
+      for (let lx = x1 + 20; lx < x2; lx += step) {
+        const flicker = Math.sin(time + lx) * 0.35 + 0.65;
+        c.beginPath();
+        c.arc(lx, y1 + 3, 3.2, 0, Math.PI * 2);
+        c.fillStyle = `rgba(255, 235, 150, ${flicker})`;
+        c.fill();
+
+        c.beginPath();
+        c.arc(lx, y1 + 3, 8, 0, Math.PI * 2);
+        c.fillStyle = `rgba(255, 205, 90, ${flicker * 0.25})`;
+        c.fill();
+      }
+    }
+
+    function drawStarsAndLanterns(c) {
+      const time = performance.now() * 0.001;
+
+      stars.forEach(st => {
+        st.opacity += Math.sin(time * 4 + st.x) * 0.015;
+        const op = Math.max(0.2, Math.min(1.0, st.opacity));
+        c.fillStyle = `rgba(255, 248, 220, ${op})`;
+        c.beginPath();
+        c.arc(st.x, st.y, st.radius, 0, Math.PI * 2);
+        c.fill();
+      });
+
+      lanterns.forEach(lt => {
+        lt.y -= lt.speedY;
+        lt.wobble += lt.wobbleSpeed;
+        const waveX = lt.x + Math.sin(lt.wobble) * 14;
+
+        if (lt.y < -height * 2.3) {
+          lt.y = height * 0.75;
+          lt.x = Math.random() * width;
+        }
+
+        c.save();
+        c.translate(waveX, lt.y);
+        c.rotate(Math.sin(lt.wobble) * 0.05);
+
+        const glowRad = lt.size * 2.2;
+        const glowGrad = c.createRadialGradient(0, 0, 2, 0, 0, glowRad);
+        glowGrad.addColorStop(0, `rgba(255, 175, 40, ${lt.alpha * 0.65})`);
+        glowGrad.addColorStop(1, 'rgba(255, 100, 0, 0)');
+        c.fillStyle = glowGrad;
+        c.beginPath();
+        c.arc(0, 0, glowRad, 0, Math.PI * 2);
+        c.fill();
+
+        c.fillStyle = 'rgba(255, 198, 80, 0.9)';
+        c.beginPath();
+        c.moveTo(-lt.size * 0.38, -lt.size * 0.5);
+        c.lineTo(lt.size * 0.38, -lt.size * 0.5);
+        c.quadraticCurveTo(lt.size * 0.5, 0, lt.size * 0.32, lt.size * 0.5);
+        c.lineTo(-lt.size * 0.32, lt.size * 0.5);
+        c.quadraticCurveTo(-lt.size * 0.5, 0, -lt.size * 0.38, -lt.size * 0.5);
+        c.closePath();
+        c.fill();
+
+        c.fillStyle = '#fffbe0';
+        c.beginPath();
+        c.arc(0, lt.size * 0.28, lt.size * 0.16, 0, Math.PI * 2);
+        c.fill();
+
+        c.restore();
+      });
+    }
+
+    function drawCourtyardDiyas(c) {
+      const time = performance.now() * 0.007;
+
+      courtyardDiyas.forEach((d, idx) => {
+        c.save();
+        c.translate(d.x, d.y);
+        c.scale(d.scale, d.scale);
+
+        const dGlow = c.createRadialGradient(0, 6, 2, 0, 6, 42);
+        dGlow.addColorStop(0, 'rgba(255, 165, 25, 0.5)');
+        dGlow.addColorStop(1, 'rgba(255, 80, 0, 0)');
+        c.fillStyle = dGlow;
+        c.beginPath();
+        c.ellipse(0, 6, 44, 15, 0, 0, Math.PI * 2);
+        c.fill();
+
+        c.fillStyle = '#8c3a13';
+        c.beginPath();
+        c.moveTo(-16, 0);
+        c.quadraticCurveTo(0, 13, 16, 0);
+        c.quadraticCurveTo(0, -3, -16, 0);
+        c.fill();
+
+        c.strokeStyle = '#d4af37';
+        c.lineWidth = 1.3;
+        c.stroke();
+
+        const flicker = Math.sin(time + idx * 2.3) * 2.2;
+        const flameHeight = 16 + Math.cos(time * 1.6 + idx) * 3;
+
+        c.fillStyle = '#ff6c00';
+        c.beginPath();
+        c.moveTo(-4, -1);
+        c.quadraticCurveTo(-5 + flicker * 0.3, -flameHeight * 0.5, 0 + flicker, -flameHeight);
+        c.quadraticCurveTo(5 + flicker * 0.3, -flameHeight * 0.5, 4, -1);
+        c.closePath();
+        c.fill();
+
+        c.fillStyle = '#fff4a8';
+        c.beginPath();
+        c.moveTo(-2, -1);
+        c.quadraticCurveTo(-2, -flameHeight * 0.4, 0 + flicker * 0.5, -flameHeight * 0.7);
+        c.quadraticCurveTo(2, -flameHeight * 0.4, 2, -1);
+        c.closePath();
+        c.fill();
+
+        c.restore();
+      });
+    }
+
+    /* =========================================================================
+       GLASS BOTTLE & ROCKET WITH DYNAMIC FLIGHT EFFECTS
+       ========================================================================= */
+    function drawGlassBottleAndRocket(c) {
+      c.save();
+      c.translate(rocket.baseX, rocket.baseY);
+
+      c.strokeStyle = 'rgba(255, 215, 0, 0.4)';
+      c.lineWidth = 1.6;
+      c.setLineDash([5, 5]);
+      c.beginPath();
+      c.ellipse(0, 5, 58, 20, 0, 0, Math.PI * 2);
+      c.stroke();
+      c.setLineDash([]);
+
+      const bH = 132;
+      const bGrad = c.createLinearGradient(-22, 0, 22, 0);
+      bGrad.addColorStop(0, 'rgba(255, 255, 255, 0.28)');
+      bGrad.addColorStop(0.3, 'rgba(120, 210, 255, 0.08)');
+      bGrad.addColorStop(0.7, 'rgba(90, 180, 240, 0.04)');
+      bGrad.addColorStop(1, 'rgba(255, 255, 255, 0.32)');
+
+      c.fillStyle = bGrad;
+      c.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+      c.lineWidth = 1.8;
+
+      c.beginPath();
+      c.moveTo(-20, 0);
+      c.lineTo(-20, -bH * 0.65);
+      c.quadraticCurveTo(-20, -bH * 0.85, -8, -bH * 0.9);
+      c.lineTo(-8, -bH);
+      c.lineTo(8, -bH);
+      c.lineTo(8, -bH * 0.9);
+      c.quadraticCurveTo(20, -bH * 0.85, 20, -bH * 0.65);
+      c.lineTo(20, 0);
+      c.closePath();
+      c.fill();
+      c.stroke();
+
+      c.strokeRect(-10, -bH - 4, 20, 4);
+      c.restore();
+
+      // Hide the rocket as soon as it detonates so the greeting reveal
+      // shows only the fireworks sky, never a frozen rocket sprite.
+      if (stage !== 'SKY_BLAST' && stage !== 'GREETING_REVEALED') {
+      // Rocket Flight Body
+      c.save();
+      c.translate(rocket.x, rocket.y);
+      c.rotate(rocket.tilt);
+
+      // Trailing Bamboo Stick
+      c.strokeStyle = '#c49e6d';
+      c.lineWidth = 3.5;
+      c.beginPath();
+      c.moveTo(3, 30);
+      c.lineTo(3, 30 + rocket.stickLen);
+      c.stroke();
+
+      // Luminous Thruster Glow during ascent
+      if (stage === 'ROCKET_LAUNCH') {
+        const jetGlow = c.createRadialGradient(0, rocket.height / 2 + 10, 2, 0, rocket.height / 2 + 20, 48);
+        jetGlow.addColorStop(0, '#ffffff');
+        jetGlow.addColorStop(0.2, '#fff485');
+        jetGlow.addColorStop(0.5, '#ff7300');
+        jetGlow.addColorStop(1, 'rgba(255, 60, 0, 0)');
+        c.fillStyle = jetGlow;
+        c.beginPath();
+        c.arc(0, rocket.height / 2 + 18, 48, 0, Math.PI * 2);
+        c.fill();
+      }
+
+      const cylW = rocket.width;
+      const cylH = rocket.height;
+
+      const cylGrad = c.createLinearGradient(-cylW / 2, 0, cylW / 2, 0);
+      cylGrad.addColorStop(0, '#53091e');
+      cylGrad.addColorStop(0.35, '#8c1134');
+      cylGrad.addColorStop(0.65, '#b01d47');
+      cylGrad.addColorStop(1, '#3d0616');
+      c.fillStyle = cylGrad;
+      c.beginPath();
+      c.roundRect(-cylW / 2, -cylH / 2, cylW, cylH, [2, 2, 6, 6]);
+      c.fill();
+
+      c.fillStyle = '#ffd700';
+      c.fillRect(-cylW / 2, -cylH / 2 + 8, cylW, 5.5);
+      c.fillRect(-cylW / 2, cylH / 2 - 14, cylW, 5.5);
+
+      c.save();
+      c.fillStyle = '#183669';
+      c.beginPath();
+      c.arc(0, 0, 15, 0, Math.PI * 2);
+      c.fill();
+      c.strokeStyle = '#ffd700';
+      c.lineWidth = 2;
+      c.stroke();
+
+      c.fillStyle = '#fff4a3';
+      c.beginPath();
+      c.arc(0, 0, 5, 0, Math.PI * 2);
+      c.fill();
+      c.restore();
+
+      const coneH = 48;
+      const coneGrad = c.createLinearGradient(-cylW / 2, 0, cylW / 2, 0);
+      coneGrad.addColorStop(0, '#cca01d');
+      coneGrad.addColorStop(0.5, '#ffe682');
+      coneGrad.addColorStop(1, '#8f6d0a');
+      c.fillStyle = coneGrad;
+      c.beginPath();
+      c.moveTo(0, -cylH / 2 - coneH);
+      c.lineTo(-cylW / 2 - 4, -cylH / 2);
+      c.lineTo(cylW / 2 + 4, -cylH / 2);
+      c.closePath();
+      c.fill();
+
+      c.fillStyle = '#ffffff';
+      c.beginPath();
+      c.arc(0, -cylH / 2 - coneH, 2.5, 0, Math.PI * 2);
+      c.fill();
+
+      c.restore();
+      }
+    }
+
+    /* =========================================================================
+       THE LITTLE BOY CHARACTER
+       ========================================================================= */
+    function updateAndDrawBoy(c, dt) {
+      if (boy.state === 'HIDDEN') return;
+
+      if (boy.state === 'WALKING_IN') {
+        audio.playFootstep(false);
+        boy.x += 135 * dt;
+        boy.walkCycle += dt * 8.5;
+        if (boy.x >= boy.targetX) {
+          boy.x = boy.targetX;
+          boy.state = 'CROUCHING';
+        }
+      } else if (boy.state === 'CROUCHING') {
+        if (boy.crouchProgress < 1.0) {
+          boy.crouchProgress = Math.min(1.0, boy.crouchProgress + dt * 2.8);
+          boy.headGazeAngle = boy.crouchProgress * 0.38;
+        } else {
+          boy.state = 'TOUCHING';
+        }
+      } else if (boy.state === 'TOUCHING') {
+        // INSTANT IGNITION
+        stage = 'FUSE_BURNING';
+        fuseBurnTimer = 0;
+        audio.playFuseIgnite();
+        addSparks(fuseCurve.endX, fuseCurve.endY, 14, 5);
+
+        // Instantly run back and cover ears
+        boy.state = 'RUNNING_BACK';
+      } else if (boy.state === 'RUNNING_BACK') {
+        audio.playFootstep(true);
+        boy.walkCycle += dt * 15;
+        boy.x -= 160 * dt;
+        boy.earsCovered = true;
+        if (boy.crouchProgress > 0) boy.crouchProgress = Math.max(0, boy.crouchProgress - dt * 5);
+        if (boy.headGazeAngle > 0) boy.headGazeAngle = Math.max(0, boy.headGazeAngle - dt * 4);
+
+        if (boy.x <= rocket.baseX - 230) {
+          boy.state = 'WATCHING';
+        }
+      } else if (boy.state === 'WATCHING') {
+        boy.walkCycle += dt * 4;
+      }
+
+      const direction = (boy.state === 'RUNNING_BACK') ? -1 : 1;
+      const emberX = boy.x + (direction === 1 ? 52 : -18);
+      const emberY = boy.y - 40 + (boy.crouchProgress * 26);
+
+      if (Math.random() < 0.45 && !boy.earsCovered) {
+        boy.agarbattiSmoke.push({
+          x: emberX,
+          y: emberY,
+          vx: (Math.random() - 0.5) * 0.8,
+          vy: -Math.random() * 1.5 - 0.7,
+          life: 1.0,
+          decay: Math.random() * 0.02 + 0.015,
+          size: Math.random() * 3 + 2
+        });
+      }
+
+      for (let i = boy.agarbattiSmoke.length - 1; i >= 0; i--) {
+        const sm = boy.agarbattiSmoke[i];
+        sm.x += sm.vx;
+        sm.y += sm.vy;
+        sm.life -= sm.decay;
+        if (sm.life <= 0) {
+          boy.agarbattiSmoke.splice(i, 1);
+          continue;
+        }
+        c.fillStyle = `rgba(225, 215, 235, ${sm.life * 0.28})`;
+        c.beginPath();
+        c.arc(sm.x, sm.y, sm.size * (2 - sm.life), 0, Math.PI * 2);
+        c.fill();
+      }
+
+      c.save();
+      c.translate(boy.x, boy.y);
+      c.scale(direction * 0.88, 0.88);
+
+      const crouch = boy.crouchProgress * 28;
+      const legBob = (boy.state === 'WALKING_IN' || boy.state === 'RUNNING_BACK') ? Math.sin(boy.walkCycle) * 7.5 : 0;
+      const bodyY = -64 + crouch + Math.abs(legBob * 0.6);
+
+      c.fillStyle = 'rgba(0, 0, 0, 0.5)';
+      c.beginPath();
+      c.ellipse(0, 2, 25, 7.5, 0, 0, Math.PI * 2);
+      c.fill();
+
+      // Silk Pyjama
+      c.fillStyle = '#f7f2ea';
+      c.beginPath();
+      c.roundRect(-10, -22 + crouch, 8.5, 22 - crouch * 0.5 + legBob, 4);
+      c.fill();
+      c.beginPath();
+      c.roundRect(3, -22 + crouch, 8.5, 22 - crouch * 0.5 - legBob, 4);
+      c.fill();
+
+      // Golden Mojaris
+      c.fillStyle = '#d4af37';
+      c.beginPath();
+      c.ellipse(-6, 0 + legBob, 7, 3.2, 0, 0, Math.PI * 2);
+      c.ellipse(7, 0 - legBob, 7, 3.2, 0, 0, Math.PI * 2);
+      c.fill();
+
+      // Kurta
+      c.fillStyle = '#fcd34d';
+      c.beginPath();
+      c.roundRect(-16, bodyY, 32, 44, [8, 8, 4, 4]);
+      c.fill();
+
+      // Nehru Vest
+      c.fillStyle = '#1c2d5a';
+      c.beginPath();
+      c.roundRect(-16, bodyY, 32, 33, [8, 8, 3, 3]);
+      c.fill();
+
+      c.strokeStyle = '#ffd700';
+      c.lineWidth = 1.6;
+      c.strokeRect(-16, bodyY, 32, 33);
+      c.fillStyle = '#ffd700';
+      c.beginPath();
+      c.arc(0, bodyY + 10, 1.8, 0, Math.PI * 2);
+      c.arc(0, bodyY + 18, 1.8, 0, Math.PI * 2);
+      c.arc(0, bodyY + 26, 1.8, 0, Math.PI * 2);
+      c.fill();
+
+      const headY = bodyY - 26;
+
+      c.save();
+      c.translate(0, headY + 4);
+      c.rotate(boy.headGazeAngle);
+
+      c.fillStyle = '#f0c294';
+      c.fillRect(-4, 12, 8, 8);
+
+      c.beginPath();
+      c.arc(0, 0, 19, 0, Math.PI * 2);
+      c.fillStyle = '#f7cb9f';
+      c.fill();
+
+      c.fillStyle = 'rgba(255, 120, 120, 0.35)';
+      c.beginPath();
+      c.arc(6, 4, 4.5, 0, Math.PI * 2);
+      c.arc(14, 4, 4.5, 0, Math.PI * 2);
+      c.fill();
+
+      c.fillStyle = '#26160e';
+      c.beginPath();
+      c.arc(0, -2, 20, Math.PI, Math.PI * 2);
+      c.lineTo(20, 1);
+      c.quadraticCurveTo(8, -10, -20, 1);
+      c.closePath();
+      c.fill();
+
+      c.fillStyle = '#26160e';
+      c.beginPath();
+      c.arc(6, 0, 2.8, 0, Math.PI * 2);
+      c.arc(14, 0, 2.8, 0, Math.PI * 2);
+      c.fill();
+
+      c.fillStyle = '#ffffff';
+      c.beginPath();
+      c.arc(7, -1, 1, 0, Math.PI * 2);
+      c.arc(15, -1, 1, 0, Math.PI * 2);
+      c.fill();
+
+      c.strokeStyle = '#994433';
+      c.lineWidth = 1.6;
+      c.beginPath();
+      c.arc(10, 6, 4.2, 0.1, Math.PI * 0.9);
+      c.stroke();
+      c.restore();
+
+      if (boy.earsCovered) {
+        c.fillStyle = '#f7cb9f';
+        c.beginPath();
+        c.arc(-14, headY + 4, 6, 0, Math.PI * 2);
+        c.arc(14, headY + 4, 6, 0, Math.PI * 2);
+        c.fill();
+      } else {
+        c.strokeStyle = '#f7cb9f';
+        c.lineWidth = 5.5;
+        c.beginPath();
+        c.moveTo(8, bodyY + 12);
+        c.lineTo(28, bodyY + 22 + crouch * 0.3);
+        c.stroke();
+
+        c.strokeStyle = '#5a3d28';
+        c.lineWidth = 2.2;
+        c.beginPath();
+        c.moveTo(26, bodyY + 20 + crouch * 0.3);
+        c.lineTo(52, bodyY + 25 + crouch * 0.4);
+        c.stroke();
+
+        c.fillStyle = '#ff3a00';
+        c.beginPath();
+        c.arc(52, bodyY + 25 + crouch * 0.4, 3.2, 0, Math.PI * 2);
+        c.fill();
+
+        c.fillStyle = 'rgba(255, 120, 20, 0.65)';
+        c.beginPath();
+        c.arc(52, bodyY + 25 + crouch * 0.4, 9, 0, Math.PI * 2);
+        c.fill();
+      }
+
+      c.restore();
+    }
+
+    /* =========================================================================
+       SWIFT JUTE WICK SPARKS
+       ========================================================================= */
+    function updateAndDrawFuse(c, dt) {
+      c.save();
+      c.strokeStyle = '#8c7659';
+      c.lineWidth = 3.6;
+      c.beginPath();
+      c.moveTo(fuseCurve.startX, fuseCurve.startY);
+      c.quadraticCurveTo(fuseCurve.ctrlX, fuseCurve.ctrlY, fuseCurve.endX, fuseCurve.endY);
+      c.stroke();
+
+      if (stage === 'FUSE_BURNING') {
+        const p = fuseCurve.burnProgress;
+        const t = 1 - p;
+        const sparkX = (1 - t) * (1 - t) * fuseCurve.startX + 2 * (1 - t) * t * fuseCurve.ctrlX + t * t * fuseCurve.endX;
+        const sparkY = (1 - t) * (1 - t) * fuseCurve.startY + 2 * (1 - t) * t * fuseCurve.ctrlY + t * t * fuseCurve.endY;
+
+        addSparks(sparkX, sparkY, 4, 4.0);
+
+        c.fillStyle = '#ffffff';
+        c.beginPath();
+        c.arc(sparkX, sparkY, 4.5, 0, Math.PI * 2);
+        c.fill();
+
+        const glow = c.createRadialGradient(sparkX, sparkY, 1, sparkX, sparkY, 30);
+        glow.addColorStop(0, 'rgba(255, 240, 100, 0.95)');
+        glow.addColorStop(0.5, 'rgba(255, 100, 0, 0.6)');
+        glow.addColorStop(1, 'rgba(255, 0, 0, 0)');
+        c.fillStyle = glow;
+        c.beginPath();
+        c.arc(sparkX, sparkY, 30, 0, Math.PI * 2);
+        c.fill();
+
+        if (Math.random() < 0.65) {
+          audio.playSizzle();
+        }
+      }
+
+      c.restore();
+    }
+
+    /* =========================================================================
+       PARTICLE SYSTEMS WITH 3D DEPTH PERSPECTIVE
+       ========================================================================= */
+    function updateAndDrawParticles(c, dt) {
+      // 1. Fuse Sparks
+      for (let i = sparks.length - 1; i >= 0; i--) {
+        const s = sparks[i];
+        s.x += s.vx;
+        s.y += s.vy;
+        s.life -= s.decay;
+        if (s.life <= 0) {
+          sparks.splice(i, 1);
+          continue;
+        }
+        c.fillStyle = s.color;
+        c.beginPath();
+        c.arc(s.x, s.y, s.size * s.life, 0, Math.PI * 2);
+        c.fill();
+      }
+
+      // 2. Trailing Spark Tails behind ascending rocket
+      for (let i = rocketTrailSparks.length - 1; i >= 0; i--) {
+        const ts = rocketTrailSparks[i];
+        ts.x += ts.vx;
+        ts.y += ts.vy;
+        ts.life -= ts.decay;
+        if (ts.life <= 0) {
+          rocketTrailSparks.splice(i, 1);
+          continue;
+        }
+        c.fillStyle = ts.color;
+        c.beginPath();
+        c.arc(ts.x, ts.y, ts.size * ts.life, 0, Math.PI * 2);
+        c.fill();
+      }
+
+      // 3. Rocket Exhaust Clouds
+      for (let i = exhaustParticles.length - 1; i >= 0; i--) {
+        const ep = exhaustParticles[i];
+        ep.x += ep.vx;
+        ep.y += ep.vy;
+        ep.life -= ep.decay;
+        if (ep.life <= 0) {
+          exhaustParticles.splice(i, 1);
+          continue;
+        }
+        c.fillStyle = ep.color;
+        c.beginPath();
+        c.arc(ep.x, ep.y, ep.size * (1 - ep.life * 0.4), 0, Math.PI * 2);
+        c.fill();
+      }
+
+      // 4. Fiery rocket detonation core and flame fragments
+      drawRocketFireBlast(c, dt);
+
+      // 4. 3D Expanding Shockwaves
+      for (let i = shockwaves.length - 1; i >= 0; i--) {
+        const sw = shockwaves[i];
+        sw.radius += 260 * dt;
+        sw.alpha -= 1.0 * dt;
+        if (sw.alpha <= 0 || sw.radius >= sw.maxRadius) {
+          shockwaves.splice(i, 1);
+          continue;
+        }
+
+        c.save();
+        c.translate(sw.x, sw.y);
+        c.scale(1, sw.tilt);
+        c.strokeStyle = sw.color;
+        c.globalAlpha = Math.max(0, sw.alpha);
+        c.lineWidth = 4;
+        c.beginPath();
+        c.arc(0, 0, sw.radius, 0, Math.PI * 2);
+        c.stroke();
+        c.restore();
+      }
+
+      // 5. 3D Spherical Fireworks Particles
+      const fov = 450;
+      for (let i = fireworkParticles.length - 1; i >= 0; i--) {
+        const fp = fireworkParticles[i];
+        fp.vx *= fp.drag;
+        fp.vy *= fp.drag;
+        fp.vz *= fp.drag;
+
+        fp.vy += fp.gravity;
+
+        fp.x += fp.vx;
+        fp.y += fp.vy;
+        fp.z += fp.vz;
+
+        fp.life -= fp.decay;
+
+        if (fp.life <= 0) {
+          fireworkParticles.splice(i, 1);
+          continue;
+        }
+
+        const scale = fov / (fov + fp.z);
+        const projX = fp.x;
+        const projY = fp.y;
+        const projSize = Math.max(0.6, fp.size * scale * fp.life);
+
+        fp.trail.push({ x: projX, y: projY, size: projSize });
+        if (fp.trail.length > 5) fp.trail.shift();
+
+        c.strokeStyle = fp.color;
+        c.lineWidth = projSize * 0.8;
+        c.globalAlpha = Math.max(0, fp.life * scale);
+        c.beginPath();
+        for (let j = 0; j < fp.trail.length; j++) {
+          const pt = fp.trail[j];
+          if (j === 0) c.moveTo(pt.x, pt.y);
+          else c.lineTo(pt.x, pt.y);
+        }
+        c.stroke();
+
+        c.fillStyle = fp.color;
+        c.beginPath();
+        c.arc(projX, projY, projSize, 0, Math.PI * 2);
+        c.fill();
+      }
+      c.globalAlpha = 1.0;
+    }
+
+    /* =========================================================================
+       SEQUENCE STATE MACHINE
+       ========================================================================= */
+    function updateSequenceLogic(dt) {
+      if (stage === 'FUSE_BURNING') {
+        fuseBurnTimer += dt;
+        fuseCurve.burnProgress = Math.min(1.0, fuseBurnTimer / fastFuseDuration);
+
+        if (fuseBurnTimer >= fastFuseDuration) {
+          stage = 'ROCKET_LAUNCH';
+          rocketFlightTimer = 0;
+          rocket.vy = 0;
+          rocket.ay = 0;
+          screenShake = 1.8;
+          audio.playRocketWhoosh(rocketFlightDuration);
+        }
+      } else if (stage === 'ROCKET_LAUNCH') {
+        // Keep the rocket in flight for a full four seconds.
+        rocketFlightTimer = Math.min(rocketFlightDuration, rocketFlightTimer + dt);
+        const flightProgress = Math.min(1, rocketFlightTimer / rocketFlightDuration);
+        // Front-load the ascent: the rocket accelerates hard immediately after ignition,
+        // then eases gently as it approaches the centre-screen detonation point.
+        // The total flight duration remains four seconds.
+        const easedProgress = flightProgress * (1.8 - 0.8 * flightProgress);
+        const launchStartY = rocket.baseY - 145;
+        const flightDistance = height * 1.15;
+        rocket.y = launchStartY - flightDistance * easedProgress;
+
+        // Exhaust smoke plumes + luminous trailing sparks
+        addExhaustSmoke(rocket.x, rocket.y + 60);
+        addRocketAscentTail(rocket.x, rocket.y + 60);
+
+        // Keep the camera locked to the same faster travel curve, ending at screen centre.
+        const desiredScreenY = launchStartY + (height * 0.5 - launchStartY) * easedProgress;
+        targetCamY = desiredScreenY - rocket.y;
+
+        // Detonate only after the full four-second ascent, exactly at screen centre.
+        if (rocketFlightTimer >= rocketFlightDuration) {
+          rocket.x = width * 0.5;
+          camY = height * 0.5 - rocket.y;
+          targetCamY = camY;
+          const blastX = width * 0.5;
+          const blastY = rocket.y;
+
+          stage = 'SKY_BLAST';
+          screenShake = 3.6;
+          audio.playDetonation();
+          if (musicStartTimeout !== null) clearTimeout(musicStartTimeout);
+          musicStartTimeout = window.setTimeout(() => {
+            if (stage === 'SKY_BLAST' || stage === 'GREETING_REVEALED') audio.startMusic();
+            syncSoundButton();
+            musicStartTimeout = null;
+          }, 650);
+
+          // Flash screen for realistic blast illumination
+          skyFlash.style.opacity = '0.9';
+          setTimeout(() => {
+            skyFlash.style.opacity = '0';
+          }, 80);
+
+          // Fiery explosion first, followed by layered 3D fireworks.
+          createRocketFireBlast(blastX, blastY);
+
+          // Grand Multi-layered 3D Fireworks Explosions
+          create3DFireworksBlast(blastX, blastY, 0, 240, ['#ffd700', '#ffae19', '#fff7c2', '#ff5722']);
+          setTimeout(() => {
+            create3DFireworksBlast(blastX - 85, blastY - 45, 60, 160, ['#00e5ff', '#ff007f', '#ffd700', '#ffffff']);
+          }, 160);
+          setTimeout(() => {
+            create3DFireworksBlast(blastX + 90, blastY - 35, -60, 160, ['#ff3366', '#ffdd55', '#33ff99', '#ffffff']);
+          }, 320);
+
+          // Transition to Page 2 (Luxury Greeting by Prasanth)
+          setTimeout(() => {
+            stage = 'GREETING_REVEALED';
+            greetingModal.style.opacity = '1';
+            greetingModal.style.pointerEvents = 'auto';
+            const card = greetingModal.querySelector('.greeting-card');
+            card.classList.add('show-card');
+            card.style.transform = 'scale(1) translateY(0)';
+          }, 1000);
+        }
+      }
+    }
+
+    /* =========================================================================
+       MAIN LOOP
+       ========================================================================= */
+    let lastTime = performance.now();
+
+    function render(currentTime) {
+      requestAnimationFrame(render);
+
+      const dt = Math.min((currentTime - lastTime) / 1000, 0.1);
+      lastTime = currentTime;
+
+      const cameraFollowStrength = stage === 'ROCKET_LAUNCH' ? 0.14 : 0.07;
+      camY += (targetCamY - camY) * cameraFollowStrength;
+
+      if (screenShake > 0) {
+        screenShake -= dt * 15;
+        if (screenShake < 0) screenShake = 0;
+      }
+
+      ctx.save();
+      const shakeX = (Math.random() - 0.5) * screenShake * 6;
+      const shakeY = (Math.random() - 0.5) * screenShake * 6;
+      ctx.translate(shakeX, camY + shakeY);
+
+      drawCourtyardBackground(ctx);
+      drawStarsAndLanterns(ctx);
+      drawCourtyardDiyas(ctx);
+      drawGlassBottleAndRocket(ctx);
+      updateAndDrawBoy(ctx, dt);
+      updateAndDrawFuse(ctx, dt);
+      updateAndDrawParticles(ctx, dt);
+
+      ctx.restore();
+
+      updateSequenceLogic(dt);
+    }
+
+    window.onload = function() {
+      requestAnimationFrame(render);
+    };
+  </script>
+</body>
+</html>
